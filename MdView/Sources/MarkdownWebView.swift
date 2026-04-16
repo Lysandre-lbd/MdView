@@ -178,7 +178,14 @@ struct MarkdownWebView: NSViewRepresentable {
           md = md.replace(/\\$\\$\\s*([\\s\\S]+?)\\s*\\$\\$/g, function(_,p){mb.push(p);return'\\x00MB'+(mb.length-1)+'\\x00';});
           md = md.replace(/\\$((?:\\\\.|[^$])+)\\$/g, function(_,p){im.push(p);return'\\x00MI'+(im.length-1)+'\\x00';});
           
-          // 2. Parsing
+          // 2. Parsing with explicit options
+          marked.setOptions({
+            gfm: true,
+            breaks: true,
+            pedantic: false,
+            smartLists: true,
+            smartypants: false
+          });
           var html = marked.parse(md);
 
           // 3. Math restoration

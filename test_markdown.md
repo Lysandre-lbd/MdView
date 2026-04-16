@@ -122,7 +122,7 @@ Wahou ! Ce texte était caché dans un menu déroulant HTML natif !
 ---
 
 # 10. Filet de séparation
-Vous avez déjà vu les `---`, on peut aussi utiliser `***` ou `___` :
+Vous avez déjà vu le s `---`, on peut aussi utiliser `***` ou `___` :
 
 ***
 
