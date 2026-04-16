@@ -31,11 +31,18 @@ struct MarkdownWebView: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        // Only reload if markdown actually changed
         if markdownText != context.coordinator.lastMarkdown {
             context.coordinator.lastMarkdown = markdownText
-            context.coordinator.isLoaded = false
-            nsView.loadHTMLString(buildHTML(for: markdownText), baseURL: nil)
+            
+            if context.coordinator.isLoaded {
+                // Real-time update via JS to avoid flicker
+                let jsMarkdownData = try? JSONEncoder().encode(markdownText)
+                let safeMarkdownString = String(data: jsMarkdownData ?? Data(), encoding: .utf8) ?? "\"\""
+                nsView.evaluateJavaScript("window.updateMarkdown(\(safeMarkdownString))", completionHandler: nil)
+            } else {
+                // Initial load
+                nsView.loadHTMLString(buildHTML(for: markdownText), baseURL: nil)
+            }
         }
 
         if let exportType = pdfExportType {
@@ -76,14 +83,10 @@ struct MarkdownWebView: NSViewRepresentable {
                     }
                 }
             }
-
         case .print:
-            // Use native macOS print panel — user can choose A4, margins, etc.
             webView.printView(nil)
         }
     }
-
-    // MARK: - HTML Builder
 
     func buildHTML(for markdownText: String) -> String {
         let jsMarkdownData = try? JSONEncoder().encode(markdownText)
@@ -108,27 +111,27 @@ struct MarkdownWebView: NSViewRepresentable {
         let hlLightCSS = bundleContent("highlight-github.min", "css")
         let hlDarkCSS = bundleContent("highlight-github-dark.min", "css")
 
-        // Embed KaTeX fonts as base64
         let fonts: [(String, String, String, String)] = [
-            ("KaTeX_Main-Regular",    "KaTeX_Main",       "normal", "normal"),
-            ("KaTeX_Main-Bold",       "KaTeX_Main",       "normal", "bold"),
-            ("KaTeX_Main-Italic",     "KaTeX_Main",       "italic", "normal"),
-            ("KaTeX_Math-Italic",     "KaTeX_Math",       "italic", "normal"),
-            ("KaTeX_Size1-Regular",   "KaTeX_Size1",      "normal", "normal"),
-            ("KaTeX_Size2-Regular",   "KaTeX_Size2",      "normal", "normal"),
-            ("KaTeX_Size3-Regular",   "KaTeX_Size3",      "normal", "normal"),
-            ("KaTeX_Size4-Regular",   "KaTeX_Size4",      "normal", "normal"),
-            ("KaTeX_AMS-Regular",     "KaTeX_AMS",        "normal", "normal"),
-            ("KaTeX_Fraktur-Regular", "KaTeX_Fraktur",    "normal", "normal"),
+            ("KaTeX_Main-Regular", "KaTeX_Main", "normal", "normal"),
+            ("KaTeX_Main-Bold", "KaTeX_Main", "normal", "bold"),
+            ("KaTeX_Main-Italic", "KaTeX_Main", "italic", "normal"),
+            ("KaTeX_Math-Italic", "KaTeX_Math", "italic", "normal"),
+            ("KaTeX_Size1-Regular", "KaTeX_Size1", "normal", "normal"),
+            ("KaTeX_Size2-Regular", "KaTeX_Size2", "normal", "normal"),
+            ("KaTeX_Size3-Regular", "KaTeX_Size3", "normal", "normal"),
+            ("KaTeX_Size4-Regular", "KaTeX_Size4", "normal", "normal"),
+            ("KaTeX_AMS-Regular", "KaTeX_AMS", "normal", "normal"),
+            ("KaTeX_Fraktur-Regular", "KaTeX_Fraktur", "normal", "normal"),
             ("KaTeX_Caligraphic-Regular", "KaTeX_Caligraphic", "normal", "normal"),
-            ("KaTeX_SansSerif-Regular",   "KaTeX_SansSerif",   "normal", "normal"),
-            ("KaTeX_Typewriter-Regular",  "KaTeX_Typewriter",  "normal", "normal"),
+            ("KaTeX_SansSerif-Regular", "KaTeX_SansSerif", "normal", "normal"),
+            ("KaTeX_Typewriter-Regular", "KaTeX_Typewriter", "normal", "normal"),
         ]
         var fontFaces = ""
         for (file, family, style, weight) in fonts {
             let b64 = bundleBase64(file, "woff2")
-            guard !b64.isEmpty else { continue }
-            fontFaces += "@font-face{font-family:'\(family)';font-style:\(style);font-weight:\(weight);src:url('data:font/woff2;base64,\(b64)') format('woff2');}\n"
+            if !b64.isEmpty {
+                fontFaces += "@font-face{font-family:'\(family)';font-style:\(style);font-weight:\(weight);src:url('data:font/woff2;base64,\(b64)') format('woff2');}\n"
+            }
         }
 
         katexCSS = katexCSS.replacingOccurrences(of: #"url\(fonts/[^)]+\)"#, with: "url(DISABLED)", options: .regularExpression)
@@ -143,7 +146,7 @@ struct MarkdownWebView: NSViewRepresentable {
         <style media="(prefers-color-scheme:light)">\(hlLightCSS)</style>
         <style media="(prefers-color-scheme:dark)">\(hlDarkCSS)</style>
         <style>
-          body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:15px;line-height:1.7;color:#24292e;max-width:820px;margin:0 auto;padding:24px}
+          body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:15px;line-height:1.7;color:#24292e;max-width:820px;margin:0 auto;padding:24px;transition: background 0.2s, color 0.2s;}
           @media(prefers-color-scheme:dark){body{color:#e6edf3;background:#0d1117}}
           h1,h2,h3,h4,h5,h6{margin-top:24px;margin-bottom:12px;font-weight:600;line-height:1.25}
           h1{font-size:2em;border-bottom:1px solid #eaecef;padding-bottom:.3em}
@@ -165,34 +168,38 @@ struct MarkdownWebView: NSViewRepresentable {
           img{max-width:100%}
           a{color:#0969da}
           @media(prefers-color-scheme:dark){a{color:#58a6ff}}
-          @page{size:A4 portrait;margin:36pt 40pt}
-          @media print{
-            body{max-width:none;margin:0;padding:0;background:white;color:black}
-            pre,table,img,blockquote{page-break-inside:avoid}
-            h1,h2,h3,h4,h5,h6{page-break-after:avoid}
-            p{orphans:3;widows:3}
-          }
         </style></head><body>
         <div id="content"></div>
         <script>
-        (function(){
-          var raw=\(safeMarkdownString);
+        window.updateMarkdown = function(md) {
           var mb=[],im=[];
-          raw=raw.replace(/\\$\\$([\\s\\S]+?)\\$\\$/g,function(_,p){mb.push(p.trim());return'\\x00MB'+(mb.length-1)+'\\x00';});
-          raw=raw.replace(/\\$([^\\n$]+?)\\$/g,function(_,p){im.push(p);return'\\x00MI'+(im.length-1)+'\\x00';});
-          var html=marked.parse(raw);
-          html=html.replace(/\\x00MB(\\d+)\\x00/g,function(_,i){
-            try{return'<div class="katex-display">'+katex.renderToString(mb[+i],{displayMode:true,throwOnError:false})+'</div>';}
-            catch(e){return'$$'+mb[+i]+'$$';}
+          // 1. Math protection with improved regex
+          md = md.replace(/\\\\\\$/g, "%%%ESCAPED_DOLLAR%%%");
+          md = md.replace(/\\$\\$\\s*([\\s\\S]+?)\\s*\\$\\$/g, function(_,p){mb.push(p);return'\\x00MB'+(mb.length-1)+'\\x00';});
+          md = md.replace(/\\$((?:\\\\.|[^$])+)\\$/g, function(_,p){im.push(p);return'\\x00MI'+(im.length-1)+'\\x00';});
+          
+          // 2. Parsing
+          var html = marked.parse(md);
+
+          // 3. Math restoration
+          html = html.replace(/\\x00MB(\\d+)\\x00/g, function(_,i){
+            try{return '<div class="katex-display">' + katex.renderToString(mb[+i],{displayMode:true,throwOnError:false}) + '</div>';}
+            catch(e){return '$$' + mb[+i] + '$$';}
           });
-          html=html.replace(/\\x00MI(\\d+)\\x00/g,function(_,i){
+          html = html.replace(/\\x00MI(\\d+)\\x00/g, function(_,i){
             try{return katex.renderToString(im[+i],{displayMode:false,throwOnError:false});}
-            catch(e){return'$'+im[+i]+'$';}
+            catch(e){return '$' + im[+i] + '$';}
           });
-          document.getElementById('content').innerHTML=html;
-          if(typeof hljs!=='undefined')
+          html = html.replace(/%%%ESCAPED_DOLLAR%%%/g, "$");
+
+          document.getElementById('content').innerHTML = html;
+          
+          if(typeof hljs !== 'undefined')
             document.querySelectorAll('pre code').forEach(function(b){hljs.highlightElement(b);});
-        })();
+        };
+
+        // Initial render
+        window.updateMarkdown(\(safeMarkdownString));
         </script>
         </body></html>
         """
