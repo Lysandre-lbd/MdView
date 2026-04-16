@@ -126,7 +126,7 @@ MdViewer/
 ## ⚠️ Known Issues
 
 - 🖼️ **Local Images**: Some local images may not render correctly in the live preview or QuickLook due to macOS Sandbox restrictions preventing the WebView from accessing sibling files. This is currently being investigated.
-- 🔍 **QuickLook Preview**: The QuickLook extension handles Markdown and math correctly, but may fail to load local images or certain scripts on some systems.
+- 🔍 **QuickLook Preview**: The QuickLook extension is currently **non-functional** in the Finder. The integration script and registration process are under review for a future fix.
 
 ---
 
