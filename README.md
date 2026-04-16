@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-blue?logo=apple" alt="macOS 13+"/>
   <img src="https://img.shields.io/badge/language-Swift%205.9-orange?logo=swift" alt="Swift"/>
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"/>
+  <img src="https://img.shields.io/badge/license-Non--Commercial-red" alt="Non-Commercial License"/>
   <img src="https://img.shields.io/github/v/release/lysandrelaborde/MdView?label=release" alt="Release"/>
 </p>
 
@@ -125,9 +125,9 @@ MdViewer/
 
 ## 📝 License
 
-**MIT License** — © 2025 [Lysandre LABORDE](https://github.com/lysandrelaborde)
+**Custom Non-Commercial License** — © 2025 [Lysandre LABORDE](https://github.com/lysandrelaborde)
 
-You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of this software. See [LICENSE](LICENSE) for full text.
+You are free to use, copy, modify, and distribute this software for **non-commercial** purposes only. Attribution to the original author (Lysandre LABORDE) is required. This software and its derivatives **cannot be sold**. See [LICENSE](LICENSE) for full text.
 
 ---
 
