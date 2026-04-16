@@ -1,0 +1,5 @@
+build/
+*.dmg
+*.dSYM
+MdView.xcodeproj/
+.DS_Store
