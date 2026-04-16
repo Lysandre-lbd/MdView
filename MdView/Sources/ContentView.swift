@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Binding var document: MarkdownDocument
+    var fileURL: URL?
     @State private var pdfExportType: PDFExportType? = nil
     @State private var isEditorVisible: Bool = true
 
@@ -15,7 +16,7 @@ struct ContentView: View {
                     .transition(.move(edge: .leading))
             }
 
-            MarkdownWebView(markdownText: document.text, pdfExportType: $pdfExportType)
+            MarkdownWebView(markdownText: document.text, pdfExportType: $pdfExportType, baseURL: fileURL?.deletingLastPathComponent())
                 .frame(minWidth: 300)
         }
         .animation(.default, value: isEditorVisible)

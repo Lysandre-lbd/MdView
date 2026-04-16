@@ -18,6 +18,7 @@ class MarkdownWebViewCoordinator: NSObject, WKNavigationDelegate {
 struct MarkdownWebView: NSViewRepresentable {
     var markdownText: String
     @Binding var pdfExportType: PDFExportType?
+    var baseURL: URL?
 
     func makeCoordinator() -> MarkdownWebViewCoordinator {
         MarkdownWebViewCoordinator()
@@ -27,6 +28,10 @@ struct MarkdownWebView: NSViewRepresentable {
         let webView = WKWebView()
         webView.setValue(false, forKey: "drawsBackground")
         webView.navigationDelegate = context.coordinator
+        
+        // Autoriser l'accès aux fichiers locaux pour les images relatives
+        webView.configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+        
         return webView
     }
 
@@ -40,8 +45,8 @@ struct MarkdownWebView: NSViewRepresentable {
                 let safeMarkdownString = String(data: jsMarkdownData ?? Data(), encoding: .utf8) ?? "\"\""
                 nsView.evaluateJavaScript("window.updateMarkdown(\(safeMarkdownString))", completionHandler: nil)
             } else {
-                // Initial load
-                nsView.loadHTMLString(buildHTML(for: markdownText), baseURL: nil)
+                // Initial load avec le baseURL du document
+                nsView.loadHTMLString(buildHTML(for: markdownText), baseURL: baseURL)
             }
         }
 

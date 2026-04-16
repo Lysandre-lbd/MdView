@@ -10,7 +10,10 @@ class PreviewViewController: NSViewController, QLPreviewingController {
 
     override func loadView() {
         let frame = NSRect(x: 0, y: 0, width: 800, height: 600)
-        webView = WKWebView(frame: frame)
+        let config = WKWebViewConfiguration()
+        config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+        
+        webView = WKWebView(frame: frame, configuration: config)
         webView.autoresizingMask = [.width, .height]
         webView.setValue(false, forKey: "drawsBackground")
         self.view = webView
@@ -25,8 +28,9 @@ class PreviewViewController: NSViewController, QLPreviewingController {
             do {
                 let markdown = try String(contentsOf: url, encoding: .utf8)
                 let html = self.buildHTML(for: markdown)
+                let baseURL = url.deletingLastPathComponent()
                 DispatchQueue.main.async {
-                    self.webView.loadHTMLString(html, baseURL: nil)
+                    self.webView.loadHTMLString(html, baseURL: baseURL)
                     handler(nil)
                 }
             } catch {
