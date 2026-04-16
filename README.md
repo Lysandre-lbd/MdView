@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="MdView/Sources/Assets.xcassets/AppIcon.appiconset/icon_1024x1024.png" width="128" height="128" alt="MdView Icon"/>
+  <img src=«icon.png" width="128" height="128" alt="MdView Icon"/>
 </p>
 
 <h1 align="center">MdView</h1>
@@ -136,4 +136,4 @@ You are free to use, copy, modify, merge, publish, distribute, sublicense, and/o
 **Lysandre LABORDE**  
 GitHub: [@lysandrelaborde](https://github.com/lysandrelaborde)
 
-> *MdView was built with Swift, caffeine, and a generous amount of AI pair-programming with Google Gemini 2.5 Pro.*
+> *MdView was built with Swift, caffeine, and a generous amount of AI pair-programming with Google Gemini 3.5 Pro and claude Sonnet 4.6.*
