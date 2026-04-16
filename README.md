@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=«icon.png" width="128" height="128" alt="MdView Icon"/>
+  <img src="icon.jpg" width="128" height="128" alt="MdView Icon"/>
 </p>
 
 <h1 align="center">MdView</h1>
@@ -94,7 +94,7 @@ The `.app` bundle is fully **self-contained** — no internet connection require
 | **KaTeX** | LaTeX math equation rendering |
 | **highlight.js** | Code syntax highlighting |
 | **xcodegen** | Project file generation from `project.yml` |
-| **Google Gemini 2.5 Pro** (via Antigravity) | AI pair-programming assistant — architecture design, bug fixes, and code generation throughout the project |
+| **Google Gemini 1.5 Pro & Claude 3.5 Sonnet** (via Antigravity) | AI pair-programming assistant — architecture design, bug fixes, and code generation throughout the project |
 
 ---
 
@@ -136,4 +136,4 @@ You are free to use, copy, modify, merge, publish, distribute, sublicense, and/o
 **Lysandre LABORDE**  
 GitHub: [@lysandrelaborde](https://github.com/lysandrelaborde)
 
-> *MdView was built with Swift, caffeine, and a generous amount of AI pair-programming with Google Gemini 3.5 Pro and claude Sonnet 4.6.*
+> *MdView was built with Swift, cookies, and a generous amount of AI pair-programming with Google Gemini 3.5 Pro and claude Sonnet 4.6.*
