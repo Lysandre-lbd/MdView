@@ -136,4 +136,4 @@ You are free to use, copy, modify, and distribute this software for **non-commer
 **Lysandre LABORDE**  
 GitHub: [@lysandrelaborde](https://github.com/lysandrelaborde)
 
-> *MdView was built with Swift, cookies, and a generous amount of AI pair-programming with Google Gemini 3.5 Pro and claude Sonnet 4.6.*
+> *MdView was built with Swift, cookies, and a generous amount of AI pair-programming with Google Gemini 3.1 Pro and claude Sonnet 4.6.*
