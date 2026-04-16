@@ -62,7 +62,7 @@ struct MdViewApp: App {
                     
                     let task2 = Process()
                     task2.launchPath = "/usr/bin/pluginkit"
-                    task2.arguments = ["-e", "use", "-i", "com.lysandre.MdView.MdViewQuickLook"]
+                    task2.arguments = ["-e", "use", "-i", "com.lysandre.MdViewQuickLook"]
                     try? task2.run()
                     task2.waitUntilExit()
                 }
